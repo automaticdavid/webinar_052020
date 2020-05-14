@@ -1,0 +1,28 @@
+---
+- name: GATHER INFORMATION FROM ROUTERS
+  hosts: cisco
+  gather_facts: No
+
+  tasks:
+
+    - name: GATHER RESSOURCES
+      ios_facts:
+       gather_subset: all
+       gather_network_resources: 
+         - l3_interfaces
+
+    - name: DISPLAY STRUCTURED DATA FOR INTERFACES
+      debug:
+        var: ansible_network_resources.l3_interfaces
+
+    - name: CREATE LOCAL DIRECTORY
+      file: 
+        path: ./host_vars
+        state: directory
+      delegate_to: localhost
+      run_once: yes
+
+    - name: CREATE A SOURCE OF TRUTH
+      copy:
+        content: "{{ansible_network_resources | to_nice_yaml}}" 
+        dest: "host_vars/{{inventory_hostname}}"

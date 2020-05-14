@@ -1,0 +1,11 @@
+---
+- name: UPDATE THE L3 CONFIGS
+  hosts: cisco
+  gather_facts: no
+
+  tasks:
+
+    - name: configure layer3 interface for ios
+      ios_l3_interfaces:
+        config: "{{ l3_interfaces }}"
+        state: replaced

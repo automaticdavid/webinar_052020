@@ -1,0 +1,31 @@
+---
+- name: GATHER INFORMATION FROM ROUTERS
+  hosts: cisco
+  gather_facts: Yes
+
+  tasks:
+
+    - name: DISPLAY VERSION
+      debug:
+        msg: "The IOS version is: {{ ansible_net_version }}"
+
+    - name: DISPLAY SERIAL NUMBER
+      debug:
+        msg: "The serial number is:{{ ansible_net_serialnum }}"
+
+    - name: COLLECT OUTPUT OF SHOW COMMANDS
+      ios_command:
+        commands:
+          - show run | i hostname
+          - show ip interface brief
+      register: show_output
+
+    - name: DISPLAY THE HOSTNAME
+      debug:
+        msg: "The hostname is {{ show_output.stdout[0] }}"
+
+    - name: DISPLAY SNMP
+      debug:
+        msg: "The SNMP config is:\n {{ ansible_net_config | regex_findall( '(snmp.*)', multiline=True) | join('\n ') }}"
+      
+
